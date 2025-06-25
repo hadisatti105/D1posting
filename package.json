@@ -1,0 +1,13 @@
+{
+    "name": "trackdrive-lead-form",
+    "version": "1.0.0",
+    "description": "Lead submission form for Sky Marketing Group",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js"
+    },
+    "dependencies": {
+        "axios": "^1.10.0",
+        "express": "^4.21.2"
+    }
+}

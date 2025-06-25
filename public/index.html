@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sky Marketing Lead Form</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background-color: #f9f9f9;
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    label {
+      display: block;
+      margin-top: 12px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 4px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #007bff;
+      border: none;
+      border-radius: 4px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .success {
+      color: green;
+      margin-top: 20px;
+    }
+
+    .error {
+      color: red;
+      margin-top: 20px;
+    }
+
+    pre {
+      background: #eee;
+      padding: 10px;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <h2>Submit Lead to Sky Marketing</h2>
+  <form id="leadForm">
+    <label for="first_name">First Name:</label>
+    <input type="text" id="first_name" name="first_name" required>
+
+    <label for="last_name">Last Name:</label>
+    <input type="text" id="last_name" name="last_name" required>
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required>
+
+    <label for="caller_id">Caller Phone Number (+1...):</label>
+    <input type="tel" id="caller_id" name="caller_id" required pattern="^\+1\d{10}$" placeholder="+17195556666">
+
+    <label for="trusted_form_url">Trusted Form URL:</label>
+    <input type="url" id="trusted_form_url" name="trusted_form_url" required pattern="https?://.+" placeholder="https://trustedform.com/cert/abc123">
+
+    <label for="accident_state">Accident State (e.g., IL):</label>
+    <input type="text" id="accident_state" name="accident_state" required pattern="^[A-Z]{2}$">
+
+    <button type="submit">Submit</button>
+  </form>
+
+  <div id="responseMessage"></div>
+  <pre id="jsonResponse" style="display: none;"></pre>
+
+  <script>
+    const form = document.getElementById('leadForm');
+    const responseMessage = document.getElementById('responseMessage');
+    const jsonResponse = document.getElementById('jsonResponse');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      responseMessage.textContent = '';
+      jsonResponse.style.display = 'none';
+      jsonResponse.textContent = '';
+
+      const formData = {
+        first_name: form.first_name.value.trim(),
+        last_name: form.last_name.value.trim(),
+        email: form.email.value.trim(),
+        trusted_form_url: form.trusted_form_url.value.trim(),
+        accident_state: form.accident_state.value.trim().toUpperCase(),
+        caller_id: form.caller_id.value.trim()
+      };
+
+      try {
+        const res = await fetch('/submit-lead', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData)
+        });
+
+        const result = await res.json();
+
+        responseMessage.className = result.success ? 'success' : 'error';
+        responseMessage.textContent = result.message;
+
+        jsonResponse.style.display = 'block';
+        jsonResponse.textContent = JSON.stringify(result.response, null, 2);
+
+      } catch (err) {
+        responseMessage.className = 'error';
+        responseMessage.textContent = 'Error submitting form';
+      }
+    });
+  </script>
+</body>
+</html>
